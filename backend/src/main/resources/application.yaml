@@ -1,0 +1,38 @@
+spring:
+  application:
+    name: backend
+  datasource:
+    # docker-compose로 띄운 MySQL 주소
+    url: jdbc:mysql://db:3306/resume_db?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Seoul
+    username: root
+    password: ${MYSQL_ROOT_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+  ai:
+    openai:
+      api-key: ${OPENAI_API_KEY}
+
+service:
+  prompt:
+    resume-gen: >
+      너는 지원자의 경험을 기업의 인재상에 맞춰 각색하는 전문가야.
+      아래 제공된 [선별된 경험 데이터]만을 사용하여 [지원 기업]의 [문항]에 답해줘.
+      
+      [선별된 경험 데이터]:
+      %s
+      
+      [지원 기업]: %s
+      [문항]: %s
+      
+      조건:
+      - 선택된 태그(%s)의 키워드가 문항 답변에 자연스럽게 녹아들게 할 것.
+      - 데이터가 부족하면 지어내지 말고, 주어진 정보를 바탕으로 논리적으로 연결할 것.

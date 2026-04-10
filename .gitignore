@@ -1,0 +1,9 @@
+.env
+*.log
+.idea/
+.vscode/
+out/
+build/
+target/
+node_modules/
+bin/
