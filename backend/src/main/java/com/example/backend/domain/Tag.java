@@ -15,4 +15,8 @@ public class Tag {
 
     @Column(unique = true, nullable = false)
     private String name; // 예: "Backend", "Communication", "Java"
+
+    public Tag(String name) {
+        this.name = name;
+    }
 }

@@ -13,5 +13,5 @@ public class ExperienceRequest {
     private String title;
     private String content;
     private String achievement;
-    private List<Long> tagIds; // 사용자가 선택한 태그의 ID 리스트 (예: [1, 2, 5])
+    private List<String> tagNames; // ID 대신 이름(String) 리스트로 받음
 }

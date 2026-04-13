@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import Signup from './pages/Signup';
 import ExperienceAdd from './pages/resume/ExperienceAdd';
-import ResumeGenerate from './pages/ResumeGenerate';
+import ResumeGenerate from './pages/resume/ResumeGenerate';
 
 function App() {
   return (

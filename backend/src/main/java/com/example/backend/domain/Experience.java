@@ -40,4 +40,9 @@ public class Experience {
         this.content = content;
         this.achievement = achievement;
     }
+
+    public void addExperienceTag(Tag tag) {
+        ExperienceTag experienceTag = new ExperienceTag(this, tag);
+        this.experienceTags.add(experienceTag);
+    }
 }

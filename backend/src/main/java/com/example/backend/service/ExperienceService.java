@@ -1,12 +1,10 @@
 package com.example.backend.service;
 
 import com.example.backend.domain.Experience;
-import com.example.backend.domain.ExperienceTag;
 import com.example.backend.domain.Member;
 import com.example.backend.domain.Tag;
 import com.example.backend.dto.ExperienceRequest;
 import com.example.backend.repository.ExperienceRepository;
-import com.example.backend.repository.ExperienceTagRepository;
 import com.example.backend.repository.MemberRepository;
 import com.example.backend.repository.TagRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class ExperienceService {
     private final ExperienceRepository experienceRepository;
     private final TagRepository tagRepository;
-    private final ExperienceTagRepository experienceTagRepository;
     private final MemberRepository memberRepository;
 
     @Transactional
@@ -35,14 +32,20 @@ public class ExperienceService {
                 .build();
         experienceRepository.save(experience);
 
-        // 2. 태그 매핑 저장
-        if (dto.getTagIds() != null) {
-            dto.getTagIds().forEach(tagId -> {
-                Tag tag = tagRepository.findById(tagId)
-                        .orElseThrow(() -> new RuntimeException("태그 없음: " + tagId));
-                experienceTagRepository.save(new ExperienceTag(experience, tag));
-            });
+        // 2. 태그 처리 (이름 기반으로 조회 및 생성)
+        if (dto.getTagNames() != null) {
+            for (String name : dto.getTagNames()) {
+                // 이미 존재하면 가져오고, 없으면 새로 생성
+                Tag tag = tagRepository.findByName(name)
+                        .orElseGet(() -> tagRepository.save(new Tag(name)));
+
+                // 연관관계 편의 메소드 활용
+                experience.addExperienceTag(tag);
+            }
         }
+
+        // 3. CascadeType.ALL에 의해 ExperienceTag도 같이 저장됨
+        experienceRepository.save(experience);
     }
 }
 
