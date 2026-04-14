@@ -12,9 +12,15 @@ import java.util.List;
 public interface ExperienceRepository extends JpaRepository<Experience,Long> {
 //    List<Experience> findByMemberId(Long memberId);
     // Fetch Join을 사용하여 Experience, ExperienceTag, Tag를 한 번에 조회 (N+1 예방)
+//    @Query("select distinct e from Experience e " +
+//            "join fetch e.experienceTags et " +
+//            "join fetch et.tag " +
+//            "where e.member.id = :memberId")
+
+    // 태그 없는 데이터도 보여줘야 할 경우를 위해 left join fetch로 변경
     @Query("select distinct e from Experience e " +
-            "join fetch e.experienceTags et " +
-            "join fetch et.tag " +
+            "left join fetch e.experienceTags et " +
+            "left join fetch et.tag " +
             "where e.member.id = :memberId")
     List<Experience> findAllWithTagsByMemberId(@Param("memberId") Long memberId);
 }

@@ -3,13 +3,16 @@ package com.example.backend.service;
 import com.example.backend.domain.Experience;
 import com.example.backend.domain.Member;
 import com.example.backend.domain.Tag;
-import com.example.backend.dto.ExperienceRequest;
+import com.example.backend.dto.request.ExperienceRequest;
+import com.example.backend.dto.response.ExperienceResponse;
 import com.example.backend.repository.ExperienceRepository;
 import com.example.backend.repository.MemberRepository;
 import com.example.backend.repository.TagRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -46,6 +49,24 @@ public class ExperienceService {
 
         // 3. CascadeType.ALL에 의해 ExperienceTag도 같이 저장됨
         experienceRepository.save(experience);
+    }
+
+    @Transactional(readOnly = true)
+    public List<ExperienceResponse> getExperiences(Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new RuntimeException("회원을 찾을 수 없습니다."));
+
+        return experienceRepository.findAllWithTagsByMemberId(member.getId()).stream()
+                .map(e -> new ExperienceResponse(
+                        e.getId(),
+                        e.getTitle(),
+                        e.getContent(),
+                        e.getAchievement(),
+                        e.getExperienceTags().stream()
+                                .map(et -> et.getTag().getName())
+                                .toList()
+                ))
+                .toList();
     }
 }
 

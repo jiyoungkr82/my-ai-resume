@@ -1,7 +1,7 @@
 package com.example.backend.service;
 
 import com.example.backend.domain.Member;
-import com.example.backend.dto.SignupRequest;
+import com.example.backend.dto.request.SignupRequest;
 import com.example.backend.repository.MemberRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;

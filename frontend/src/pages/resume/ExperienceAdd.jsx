@@ -8,10 +8,12 @@ const ExperienceAdd = () => {
     const [availableTags, setAvailableTags] = useState([]); // DB의 기존 태그들
     const [selectedTags, setSelectedTags] = useState([]); // 선택된 태그 '이름' 리스트
     const [customTag, setCustomTag] = useState(''); // 직접 입력 중인 태그
+    {/* 테스트용 MemberId */}
+    const TEMP_MEMBER_ID = 1;
 
     // 1. 초기 로딩 시 태그 리스트 가져오기
     useEffect(() => {
-        axios.get('http://localhost:8080/api/tags')
+        axios.get(`${import.meta.env.VITE_API_URL}/api/tags`)
             .then(res => setAvailableTags(res.data))
             .catch(err => console.error("태그 로드 실패", err));
     }, []);
@@ -40,7 +42,7 @@ const ExperienceAdd = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         const payload = {
-            memberId: 1, // 테스트용 하드코딩
+            memberId: TEMP_MEMBER_ID, // 테스트용 하드코딩
             title,
             content,
             achievement,
@@ -48,7 +50,7 @@ const ExperienceAdd = () => {
         };
 
         try {
-            await axios.post('http://localhost:8080/api/experiences', payload);
+            await axios.post(`${import.meta.env.VITE_API_URL}/api/experiences`, payload);
             alert("경험이 성공적으로 등록되었습니다!");
             // 등록 후 초기화
             setTitle(''); setContent(''); setAchievement(''); setSelectedTags([]);

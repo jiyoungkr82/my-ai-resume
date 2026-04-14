@@ -1,6 +1,6 @@
 package com.example.backend.controller;
 
-import com.example.backend.dto.SignupRequest;
+import com.example.backend.dto.request.SignupRequest;
 import com.example.backend.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

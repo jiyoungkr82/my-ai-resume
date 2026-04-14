@@ -4,7 +4,7 @@ import com.example.backend.domain.Experience;
 import com.example.backend.domain.Member;
 import com.example.backend.domain.Resume;
 import com.example.backend.domain.ResumeItem;
-import com.example.backend.dto.ResumeRequest;
+import com.example.backend.dto.request.ResumeRequest;
 import com.example.backend.repository.ExperienceRepository;
 import com.example.backend.repository.MemberRepository;
 import com.example.backend.repository.ResumeRepository;
