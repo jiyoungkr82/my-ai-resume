@@ -23,4 +23,13 @@ public interface ExperienceRepository extends JpaRepository<Experience,Long> {
             "left join fetch et.tag " +
             "where e.member.id = :memberId")
     List<Experience> findAllWithTagsByMemberId(@Param("memberId") Long memberId);
+
+    @Query("select distinct e from Experience e " +
+            "join fetch e.experienceTags et " +
+            "join fetch et.tag t " +
+            "where e.member.id = :memberId " +
+            "and t.id in :tagIds") // 이름 대신 ID로 필터링
+    List<Experience> findAllByMemberIdAndTagIds(@Param("memberId") Long memberId,
+                                                @Param("tagIds") List<Long> tagIds);
+
 }

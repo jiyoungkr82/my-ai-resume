@@ -1,5 +1,6 @@
 package com.example.backend.controller;
 
+import com.example.backend.dto.request.SigninRequest;
 import com.example.backend.dto.request.SignupRequest;
 import com.example.backend.service.MemberService;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,12 @@ public class AuthController {
     public ResponseEntity<String> signup(@RequestBody SignupRequest request) {
         memberService.join(request);
         return ResponseEntity.ok("회원가입이 완료되었습니다.");
+    }
+
+    @PostMapping("/signin")
+    public ResponseEntity<String> signup(@RequestBody SigninRequest request) {
+        memberService.login(request);
+        return ResponseEntity.ok("로그인이 완료되었습니다.");
     }
 }
 

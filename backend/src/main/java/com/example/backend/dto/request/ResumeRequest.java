@@ -11,5 +11,5 @@ public class ResumeRequest {
     private Long memberId;
     private String companyName;
     private String question;
-    private List<String> selectedTags; // 예: ["Backend", "Problem Solving"]
+    private List<Long> selectedTagIds;
 }

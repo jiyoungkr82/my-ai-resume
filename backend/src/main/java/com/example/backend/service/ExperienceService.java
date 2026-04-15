@@ -26,12 +26,15 @@ public class ExperienceService {
         Member member = memberRepository.findById(dto.getMemberId())
                 .orElseThrow(() -> new RuntimeException("회원을 찾을 수 없습니다."));
 
+        String createdSummary = ExperienceResponse.createSummary(dto.getContent());
+
         // 1. 경험 본체 저장
         Experience experience = Experience.builder()
                 .member(member)
                 .title(dto.getTitle())
                 .content(dto.getContent())
                 .achievement(dto.getAchievement())
+                .summary(createdSummary)
                 .build();
         experienceRepository.save(experience);
 
@@ -62,6 +65,7 @@ public class ExperienceService {
                         e.getTitle(),
                         e.getContent(),
                         e.getAchievement(),
+                        e.getSummary(),
                         e.getExperienceTags().stream()
                                 .map(et -> et.getTag().getName())
                                 .toList()

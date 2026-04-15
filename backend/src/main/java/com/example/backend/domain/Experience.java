@@ -33,12 +33,16 @@ public class Experience {
     @Column(columnDefinition = "TEXT")
     private String achievement; // 성과
 
+    @Column(columnDefinition = "TEXT")
+    private String summary; // 내용 요약
+
     @Builder
-    public Experience(Member member, String title, String content, String achievement) {
+    public Experience(Member member, String title, String content, String achievement, String summary) {
         this.member = member;
         this.title = title;
         this.content = content;
         this.achievement = achievement;
+        this.summary = summary;
     }
 
     public void addExperienceTag(Tag tag) {

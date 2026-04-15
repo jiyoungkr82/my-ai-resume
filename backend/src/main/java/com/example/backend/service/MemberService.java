@@ -1,11 +1,14 @@
 package com.example.backend.service;
 
 import com.example.backend.domain.Member;
+import com.example.backend.dto.request.SigninRequest;
 import com.example.backend.dto.request.SignupRequest;
 import com.example.backend.repository.MemberRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -25,6 +28,17 @@ public class MemberService {
                 .build();
 
         return memberRepository.save(member).getId();
+    }
+
+    public String login(SigninRequest dto) {
+
+        Optional<Member> loginMember
+                = memberRepository.findByEmailAndPassword(dto.getEmail(), dto.getPassword());
+
+        if(loginMember != null) {
+            return "Login_Success";
+        }
+        return "Login_Failed";
     }
 
     private void validateDuplicateMember(String email) {
