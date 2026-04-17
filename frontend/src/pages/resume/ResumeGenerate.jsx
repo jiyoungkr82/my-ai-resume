@@ -11,8 +11,6 @@ const ResumeGenerate = () => {
     question: '',
     selectedTags: []
   });
-  {/* 테스트용 MemberId */}
-  const TEMP_MEMBER_ID = 1;
   const [availableTags, setAvailableTags] = useState([]);
   const [result, setResult] = useState('');
   const [loading, setLoading] = useState(false);
@@ -54,7 +52,7 @@ const ResumeGenerate = () => {
       .catch(err => console.error("태그 로드 실패", err));
 
     // 전체 경험 로드 (memberId 1 가정)
-    axios.get(`${import.meta.env.VITE_API_URL}/api/experiences?memberId=${TEMP_MEMBER_ID}`)
+    axios.get(`${import.meta.env.VITE_API_URL}/api/experiences`)
       .then(res => setAllExperiences(res.data))
       .catch(err => console.error("경험 로드 실패", err));
   }, []);
@@ -93,8 +91,7 @@ const ResumeGenerate = () => {
     const payload = {
           companyName: formData.companyName,
           question: formData.question,
-          selectedTagIds: selectedTagIds,
-          memberId: TEMP_MEMBER_ID
+          selectedTagIds: selectedTagIds
     };
 
     try {

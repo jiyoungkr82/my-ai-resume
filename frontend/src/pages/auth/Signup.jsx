@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 const Signup = () => {
@@ -24,7 +24,7 @@ const Signup = () => {
     e.preventDefault(); // 폼 제출 시 페이지 새로고침 방지
     try {
       // Axios를 이용해 백엔드(Spring Boot) API를 호출합니다.
-      const response = await axios.post(`http://localhost:8080/api/auth/signup`, formData);
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/signup`, formData);
       alert(response.data); // "회원가입 완료" 메시지 출력
     } catch (error) {
       console.error('회원가입 에러:', error);

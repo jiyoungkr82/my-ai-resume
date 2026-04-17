@@ -22,8 +22,8 @@ public class ExperienceService {
     private final MemberRepository memberRepository;
 
     @Transactional
-    public void saveExperience(ExperienceRequest dto) {
-        Member member = memberRepository.findById(dto.getMemberId())
+    public void saveExperience(Long memberId, ExperienceRequest dto) {
+        Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new RuntimeException("회원을 찾을 수 없습니다."));
 
         String createdSummary = ExperienceResponse.createSummary(dto.getContent());

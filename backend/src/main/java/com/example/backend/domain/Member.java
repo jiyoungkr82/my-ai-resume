@@ -10,8 +10,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Member {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(unique = true, nullable = false)
@@ -22,10 +21,14 @@ public class Member {
 
     private String name;
 
+    @Enumerated(EnumType.STRING)
+    private Role role; // Enum 사용
+
     @Builder
-    public Member(String email, String password, String name) {
+    public Member(String email, String password, String name, Role role) {
         this.email = email;
         this.password = password;
         this.name = name;
+        this.role = (role == null) ? Role.USER : role; // 기본값 USER
     }
 }

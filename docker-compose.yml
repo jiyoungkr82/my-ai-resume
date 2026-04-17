@@ -28,6 +28,7 @@ services:
       SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/resume_db # 'localhost'가 아닌 서비스명 'db'로 접근!
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       OPENAI_API_KEY: ${OPENAI_API_KEY}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
     depends_on:
       - db # DB가 먼저 뜬 다음에 백엔드가 실행됨
 

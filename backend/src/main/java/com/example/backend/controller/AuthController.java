@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
@@ -24,9 +26,9 @@ public class AuthController {
     }
 
     @PostMapping("/signin")
-    public ResponseEntity<String> signup(@RequestBody SigninRequest request) {
-        memberService.login(request);
-        return ResponseEntity.ok("로그인이 완료되었습니다.");
+    public ResponseEntity<Map<String, String>> signup(@RequestBody SigninRequest request) {
+        String token = memberService.login(request);
+        return ResponseEntity.ok(Map.of("token", token));
     }
 }
 
