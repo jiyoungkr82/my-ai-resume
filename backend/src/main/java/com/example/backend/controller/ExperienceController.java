@@ -1,6 +1,5 @@
 package com.example.backend.controller;
 
-import com.example.backend.domain.Experience;
 import com.example.backend.domain.Member;
 import com.example.backend.dto.request.ExperienceRequest;
 import com.example.backend.dto.response.ExperienceResponse;

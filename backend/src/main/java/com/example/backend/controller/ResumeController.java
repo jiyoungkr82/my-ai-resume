@@ -23,6 +23,7 @@ public class ResumeController {
     public ResponseEntity<String> generateResume(@AuthenticationPrincipal String email,
                                                  @RequestBody ResumeRequest request)
     {
+        System.out.println("email: "+email);
         // 1. DB에서 이메일로 사용자 ID 찾기
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));

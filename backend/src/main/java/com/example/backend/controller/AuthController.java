@@ -4,6 +4,8 @@ import com.example.backend.dto.request.SigninRequest;
 import com.example.backend.dto.request.SignupRequest;
 import com.example.backend.service.MemberService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.logging.Log;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
@@ -28,6 +31,7 @@ public class AuthController {
     @PostMapping("/signin")
     public ResponseEntity<Map<String, String>> signup(@RequestBody SigninRequest request) {
         String token = memberService.login(request);
+        log.info("token : {}", token);
         return ResponseEntity.ok(Map.of("token", token));
     }
 }

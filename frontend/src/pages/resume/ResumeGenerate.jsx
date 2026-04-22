@@ -62,21 +62,25 @@ const ResumeGenerate = () => {
     if (formData.selectedTags.length === 0) {
       setFilteredExps([]);
     } else {
+      const selectedTagNames = availableTags
+            .filter(tag => formData.selectedTags.includes(tag.id))
+            .map(tag => tag.name);
+
       const filtered = allExperiences.filter(exp =>
-        exp.tags?.some(tagName => formData.selectedTags.includes(tagName))
+        exp.tags?.some(tagName => selectedTagNames.includes(tagName))
       );
       setFilteredExps(filtered);
     }
   }, [formData.selectedTags, allExperiences]);
 
-  const handleTagToggle = (tagName) => {
+  const handleTagToggle = (tagId) => { // name 대신 id를 인자로 받음
     setFormData(prev => ({
       ...prev,
-      selectedTags: prev.selectedTags.includes(tagName)
-        ? prev.selectedTags.filter(t => t !== tagName)
-        : [...prev.selectedTags, tagName]
+      selectedTags: prev.selectedTags.includes(tagId)
+        ? prev.selectedTags.filter(id => id !== tagId)
+        : [...prev.selectedTags, tagId]
     }));
-  }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -91,13 +95,16 @@ const ResumeGenerate = () => {
     const payload = {
           companyName: formData.companyName,
           question: formData.question,
-          selectedTagIds: selectedTagIds
+          selectedTagIds: formData.selectedTags
     };
 
     try {
+      const token = localStorage.getItem('accessToken'); // 저장된 토큰 가져오기
+      console.log("Request URL:", `${import.meta.env.VITE_API_URL}/api/resumes/generate`);
+
       const response = await axios.post(
-          `${import.meta.env.VITE_API_URL}/api/resumes/generate`
-          , payload
+          `${import.meta.env.VITE_API_URL}/api/resumes/generate`,
+          payload
           );
       setResult(response.data);
     } catch (err) {
@@ -143,12 +150,12 @@ const ResumeGenerate = () => {
               <button
                 key={tag.id}
                 type="button"
-                onClick={() => handleTagToggle(tag.name)}
+                onClick={() => handleTagToggle(tag.id)}
                 style={{
                   padding: '8px 15px', borderRadius: '20px',
                   border: '1px solid #2196F3', cursor: 'pointer',
-                  backgroundColor: formData.selectedTags.includes(tag.name) ? '#2196F3' : 'white',
-                  color: formData.selectedTags.includes(tag.name) ? 'white' : '#2196F3',
+                  backgroundColor: formData.selectedTags.includes(tag.id) ? '#2196F3' : 'white',
+                  color: formData.selectedTags.includes(tag.id) ? 'white' : '#2196F3',
                   transition: 'all 0.3s', fontSize: '14px'
                 }}
               >

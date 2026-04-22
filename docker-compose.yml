@@ -16,6 +16,13 @@ services:
       MYSQL_DATABASE: resume_db
     volumes:
       - db_data:/var/lib/mysql
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}" ]
+      interval: 10s    # 10초마다 체크
+      timeout: 5s     # 5초 안에 응답 없으면 실패로 간주
+      retries: 5      # 5번 연속 실패 시 Unhealthy로 판단
+      start_period: 30s # DB 초기화 시간을 고려해 30초 동안은 실패해도 카운트하지 않음
+
 
 #   2. 백엔드(Spring Boot) 컨테이너
   backend:
@@ -30,7 +37,8 @@ services:
       OPENAI_API_KEY: ${OPENAI_API_KEY}
       JWT_SECRET_KEY: ${JWT_SECRET_KEY}
     depends_on:
-      - db # DB가 먼저 뜬 다음에 백엔드가 실행됨
+      db:
+        condition: service_healthy # [수정] 단순히 실행되는 게 아니라 'Healthy' 상태일 때 실행
 
   # 3. 프론트엔드(React) 컨테이너
   frontend:
@@ -41,7 +49,8 @@ services:
     stdin_open: true # 리액트 컨테이너가 바로 종료되는 것 방지
     tty: true
     depends_on:
-      - backend
+      backend:
+        condition: service_started # 백엔드는 별도 헬스체크가 없으면 기존처럼 시작만 체크
 
 volumes:
   db_data:
