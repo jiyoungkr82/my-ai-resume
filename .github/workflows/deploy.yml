@@ -9,15 +9,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      # 1. 도커 허브 로그인 (Secrets 사용)
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      # 2. 백엔드 빌드 및 푸시
       - name: Build and Push Backend
         uses: docker/build-push-action@v6
         with:
@@ -25,28 +22,80 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/resume-api:latest
 
-      # 3. 프론트엔드 빌드 및 푸시
       - name: Build and Push Frontend
         uses: docker/build-push-action@v6
         with:
           context: ./frontend
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/resume-web:latest
-          # 빌드 시점에 환경변수 주입 (EC2 IP가 정해지면 Secrets에 넣어서 사용)
           build-args: |
             VITE_API_URL=http://${{ secrets.EC2_HOST }}:8080
 
-  # (참고) 나중에 진행할 배포(CD) 단계 예시
-#  deploy:
-#    needs: build-and-push
-#    runs-on: ubuntu-latest
-#    steps:
-#      - name: Deploy to EC2
-#        uses: appleboy/ssh-action@master
-#        with:
-#          host: ${{ secrets.EC2_HOST }}
-#          username: ${{ secrets.EC2_USERNAME }}
-#          key: ${{ secrets.EC2_SSH_KEY }}
-#          script: |
-#            docker compose pull
-#            docker compose up -d
+  deploy: # 드디어 주석 해제!
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to EC2 via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            # 1. 서버 폴더 생성 (없으면)
+            mkdir -p ~/app
+            cd ~/app
+
+            # 2. 서버용 docker-compose.yml 즉석 생성
+            cat <<EOF > docker-compose.yml
+            services:
+              db:
+                image: mysql:8.0
+                container_name: resume-db
+                restart: always
+                environment:
+                  MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
+                  MYSQL_DATABASE: resume_db
+                ports:
+                  - "3306:3306"
+                volumes:
+                  - db_data:/var/lib/mysql
+                healthcheck:
+                  test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${{ secrets.MYSQL_ROOT_PASSWORD }}"]
+                  interval: 10s
+                  timeout: 5s
+                  retries: 5
+                  start_period: 30s
+
+              backend:
+                image: ${{ secrets.DOCKERHUB_USERNAME }}/resume-api:latest
+                container_name: resume-api
+                restart: always
+                environment:
+                  SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/resume_db
+                  MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
+                  OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+                  JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+                ports:
+                  - "8080:8080"
+                depends_on:
+                  db:
+                    condition: service_healthy
+
+              frontend:
+                image: ${{ secrets.DOCKERHUB_USERNAME }}/resume-web:latest
+                container_name: resume-web
+                restart: always
+                ports:
+                  - "80:5173"
+                depends_on:
+                  - backend
+
+            volumes:
+              db_data:
+            EOF
+
+            # 3. 최신 이미지 pull 및 컨테이너 재실행
+            sudo docker compose pull
+            sudo docker compose up -d
+            sudo docker image prune -f # 오래된 이미지 삭제
