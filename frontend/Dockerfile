@@ -1,16 +1,20 @@
-FROM node:20-alpine
+# 1단계: 빌드 스테이지
+FROM node:20-alpine AS build
 WORKDIR /app
-
-# 캐시 효율을 위해 package.json 먼저 복사
 COPY package*.json ./
 RUN npm install
-
-# 전체 소스 복사 (.env 포함)
 COPY . .
 
-# Vite 개발 서버 포트
-EXPOSE 5173
+# [핵심] 빌드 직전에 변수를 주입받아야 빌드 파일에 주소가 박힙니다!
+ARG VITE_API_URL
+ENV VITE_API_URL=$VITE_API_URL
 
-# 핵심: --host 옵션을 추가하여 외부 접속 허용
-# npm run dev 뒤에 -- --host를 붙이면 실제 실행 시 vite --host가 됩니다.
-CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
+RUN npm run build
+
+# 2단계: 실행 스테이지 (Nginx 사용)
+FROM nginx:alpine
+# 빌드 결과물을 Nginx 폴더로 복사
+COPY --from=build /app/dist /usr/share/nginx/html
+# 80포트 개방
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
