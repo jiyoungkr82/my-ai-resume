@@ -39,7 +39,7 @@ services:
     container_name: resume-web
     restart: always
     ports:
-      - "80:5173" # 서버에서는 80포트로 접속하면 5173(Vite)으로 연결
+      - "80:80" # Nginx 내부 80포트를 외부 80포트로 연결
     depends_on:
       - backend
 
