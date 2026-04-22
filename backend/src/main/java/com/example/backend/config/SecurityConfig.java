@@ -50,12 +50,11 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        // 실제 배포된 서버 IP와 로컬 주소를 모두 허용합니다.
-        configuration.setAllowedOrigins(Arrays.asList(
-                "http://52.64.168.177",
-                "http://localhost:5173"
+        configuration.setAllowedOrigins(List.of(
+                "http://localhost:5173",
+                "http://localhost:3000",
+                "http://52.64.168.177"
         ));
-        configuration.setAllowedOrigins(List.of("http://localhost:3000")); // 프론트 주소
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type")); // JWT 헤더 허용
         configuration.setExposedHeaders(List.of("Authorization")); // 프론트가 토큰을 읽을 수 있게 노출
